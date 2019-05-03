@@ -45,14 +45,6 @@ class TicTacToeTester(TestCase):
         self.assertIsNotNone(ixf)
         self.assertEqual(len(xf), len(ixf))
 
-    def test_xforms(self):
-        state = self.state2
-        isos = [State(StateCache.apply_xforms(xforms, state[:]))
-                for xforms, ixforms in StateCache._get_iso_xforms()]
-        #for iso in isos:
-        #    print()
-        #    print(iso)
-
     def test_branching_in_cache(self):
         cache = StateCache()
         branches = chain(branch([State()], Mark.OMARK, depth=2),

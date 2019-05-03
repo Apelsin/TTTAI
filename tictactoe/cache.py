@@ -7,7 +7,8 @@ Module for caching game states for efficiency
 import numpy as np
 import json
 from tictactoe import Mark, State
-from ai import branch
+from tictactoe.ai import branch
+from tictactoe.util import apply_xforms
 
 
 def rot270(a):
@@ -74,18 +75,6 @@ class StateCache:
         yield i, iinv
 
     @classmethod
-    def _apply_xforms(cls, xforms, a):
-        """
-        Applies a sequence of transformations to an array
-        :param xforms: (iterable) of transformation functions
-        :param a: (ndarray) the array
-        :return: (ndarray) the transformed array
-        """
-        for xf in xforms:
-            a = xf(a)
-        return a
-
-    @classmethod
     def _get_isomorphs(cls, state):
         """
         Get the geometrically isomorphic states of a given state
@@ -94,7 +83,7 @@ class StateCache:
         """
         xforms = next(zip(*cls._get_iso_xforms()))
         for xform in xforms:
-            yield State(cls._apply_xforms(xform, state[:]))
+            yield State(apply_xforms(xform, state[:]))
 
     def __contains__(self, item):
         isos = set(self._get_isomorphs(item))
@@ -102,7 +91,7 @@ class StateCache:
 
     def __getitem__(self, item):
         for xforms, ixforms in self._get_iso_xforms():
-            iso = State(self._apply_xforms(xforms, item[:]))
+            iso = State(apply_xforms(xforms, item[:]))
             if iso in self._cache:
                 return iso, xforms, ixforms
         return None, None, None

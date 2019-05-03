@@ -1,10 +1,10 @@
 from unittest import TestCase
 from tictactoe import Mark, State
-from ai import branch
+from tictactoe.ai import branch
 from tictactoe.cache import StateCache
+from tictactoe.util import apply_xforms
 import numpy as np
 from itertools import chain
-
 
 class TicTacToeTester(TestCase):
     def setUp(self):
@@ -20,8 +20,8 @@ class TicTacToeTester(TestCase):
     def test_isomorphs(self):
         for state in self.branchx:
             for xforms, ixforms in StateCache._get_iso_xforms():
-                iso = StateCache._apply_xforms(xforms, state[:])
-                orig = StateCache._apply_xforms(ixforms, iso)
+                iso = apply_xforms(xforms, state[:])
+                orig = apply_xforms(ixforms, iso)
                 message = f'xforms = {xforms}, ixforms = {ixforms}'
                 self.assertEqual(state, State(orig), msg=message)
 
@@ -47,7 +47,7 @@ class TicTacToeTester(TestCase):
 
     def test_xforms(self):
         state = self.state2
-        isos = [State(StateCache._apply_xforms(xforms, state[:]))
+        isos = [State(StateCache.apply_xforms(xforms, state[:]))
                 for xforms, ixforms in StateCache._get_iso_xforms()]
         #for iso in isos:
         #    print()

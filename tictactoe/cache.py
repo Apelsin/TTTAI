@@ -63,12 +63,15 @@ class StateCache:
         f = c + [np.rot90]
         finv = [rot270] + cinv
         yield f, finv
-        g = f + [np.rot90]
-        ginv = [rot270] + finv
+        g = d + [np.transpose]
+        ginv = [np.transpose] + dinv
         yield g, ginv
-        h = e + [np.transpose]
-        hinv = [np.transpose] + einv
+        h = f + [np.rot90]
+        hinv = [rot270] + finv
         yield h, hinv
+        i = e + [np.transpose]
+        iinv = [np.transpose] + einv
+        yield i, iinv
 
     @classmethod
     def _apply_xforms(cls, xforms, a):

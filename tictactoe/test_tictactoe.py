@@ -69,7 +69,7 @@ class TicTacToeTester(TestCase):
         self.assertEqual(len(b10), 1)
 
     def test_branching_of_cache(self):
-        # Bmdranch to legal board states
+        # Branch to legal board states
         b1 = chain(*(branch([s], m)
                      for s in self.cache
                      for m in s.next_marks()))

@@ -64,6 +64,16 @@ class State:
         """
         return ''.join(str(Mark(int(x))) for x in self._array.flatten())
 
+    def next_marks(self):
+        unique, cnt = np.unique(self._array.flatten(), return_counts=True)
+        count = dict(zip(unique, cnt))
+        os = count.get(Mark.OMARK, 0)
+        xes = count.get(Mark.XMARK, 0)
+        if os == xes:
+            return {Mark.OMARK, Mark.XMARK}
+        else:
+            return {Mark.OMARK} if xes > os else {Mark.XMARK}
+
     @classmethod
     def from_code(cls, code):
         """
@@ -93,3 +103,7 @@ class State:
 
     def __hash__(self):
         return hash(tuple(self._array.flatten()))
+
+    def __contains__(self, item):
+        return item in self._array.flatten()
+

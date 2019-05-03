@@ -29,7 +29,7 @@ class StateCache:
 
     def write(self, file_path):
         with open(file_path, 'w', encoding='ascii') as fp:
-            json.dump([c.to_code() for c in self], fp)
+            json.dump(sorted([c.to_code() for c in self]), fp)
 
     def load(self, file_path):
         with open(file_path, 'r') as fp:

@@ -65,6 +65,11 @@ class State:
         return ''.join(str(Mark(int(x))) for x in self._array.flatten())
 
     def next_marks(self):
+        """
+        Get the next valid marks that could be replace a blank space in
+        this state
+        :return: (set) of Mark objects
+        """
         unique, cnt = np.unique(self._array.flatten(), return_counts=True)
         count = dict(zip(unique, cnt))
         os = count.get(Mark.OMARK, 0)

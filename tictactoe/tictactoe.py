@@ -128,16 +128,29 @@ class State:
 
     @property
     def desirability(self):
+        """
+        The desirability values for each Mark for this state
+        :return: (dict)
+        """
         return self._desirability
 
     @desirability.setter
     def desirability(self, value):
-        if not hasattr(value, '__getitem__') and value is not None:
+        if value is None:
+            self._desirability = None
+            return
+        if not hasattr(value, '__getitem__'):
             raise TypeError('desirability object must sliceable')
-        self._desirability = value
+        self._desirability = dict(value)
 
     @classmethod
     def _roll_rows(cls, array, step=1):
+        """
+        Rolls each row in a (2D) array by a step value
+        :param array: (ndarray) the array
+        :param step: (int) number of columns to shift by
+        :return: (ndarray)
+        """
         for idx, row in enumerate(array):
             yield np.roll(row, step * idx)
 

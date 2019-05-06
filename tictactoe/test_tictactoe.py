@@ -1,3 +1,9 @@
+"""
+Tic-Tac-Toe unit tests
+
+Tests various classes and functions in the tictactoe modules
+"""
+
 from unittest import TestCase
 from tictactoe import Mark, State
 from tictactoe.ai import branch
@@ -5,6 +11,7 @@ from tictactoe.cache import StateCache
 from tictactoe.util import apply_xforms
 import numpy as np
 from itertools import chain
+
 
 class TicTacToeTester(TestCase):
     def setUp(self):
@@ -34,8 +41,8 @@ class TicTacToeTester(TestCase):
         cached, xf, ixf = cache[state1_iso]
         self.assertEqual(self.state1, cached)
 
-    def test_to_code(self):
-        self.assertEqual(self.state1.to_code(), '.OX.XOO..')
+    def test_to_code1(self):
+        self.assertEqual(self.state1.to_code1(), '.OX.XOO..')
 
     def test_branching(self):
         self.assertNotEqual(self.brancho, self.branchx)

@@ -9,15 +9,7 @@ import json
 from tictactoe import Mark, State
 from tictactoe.ai import branch
 from tictactoe.util import apply_xforms
-
-
-def rot270(a):
-    """
-    Rotate an array clockwise by 90 degrees
-    :param a: (ndarray) the array
-    :return: (ndarray) the array rotated 90 degrees clockwise
-    """
-    return np.rot90(a, 3)
+from .util import rot270
 
 
 class StateCache:
@@ -29,6 +21,10 @@ class StateCache:
         self._cache = set()
 
     def write(self, file_path):
+        """
+        Write this cache to a JSON file at the specified path
+        :param file_path: (string) file path
+        """
         data = {
             'Format': '002',
             'States': sorted([c.to_code2() for c in self])
@@ -37,6 +33,10 @@ class StateCache:
             json.dump(data, fp)
 
     def load(self, file_path):
+        """
+        Read a JSON file at the specified path into this cache
+        :param file_path: (string) file path
+        """
         with open(file_path, 'r') as fp:
             data = json.load(fp)
         _format = int(data['Format'])
@@ -115,6 +115,9 @@ class StateCache:
         self._cache.add(state)
 
     def clear_desirability(self):
+        """
+        Set the desirability of all States in the cache to None
+        """
         for state in self._cache:
             state.desirability = None
 

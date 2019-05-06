@@ -14,6 +14,8 @@ class TicTacToeTester(TestCase):
         self.state2 = State(np.array([[0, 1, 2], [0, 2, 1], [1, 2, 1]]))
         self.stateo = State(np.array([[1, 0, 0], [0, 0, 0], [0, 0, 0]]))
         self.statex = State(np.array([[2, 0, 0], [0, 0, 0], [0, 0, 0]]))
+        self.xwins1 = State(np.array([[2, 0, 0], [1, 2, 1], [1, 0, 2]]))
+        self.owins1 = State(np.array([[0, 1, 2], [2, 1, 0], [0, 1, 0]]))
         self.cache = StateCache()
         self.cache.load('state-cache.json')
 
@@ -66,3 +68,7 @@ class TicTacToeTester(TestCase):
                      for s in self.cache
                      for m in s.next_marks()))
         self.assertTrue(all(s in self.cache for s in b1))
+
+    def test_winner(self):
+        self.assertEqual(self.xwins1.winner, Mark.XMARK)
+        self.assertEqual(self.owins1.winner, Mark.OMARK)

@@ -6,6 +6,8 @@ Contains classes for modeling a game of Tic-Tac-Toe
 
 from enum import Enum
 import numpy as np
+from copy import copy
+from .util import *
 
 
 class Mark(int, Enum):
@@ -46,6 +48,8 @@ class State:
             self._array = array
         else:
             self._array = np.full((3, 3), Mark.EMPTY, dtype=Mark)
+        self._desirability = None
+        self._cached_winner = None
 
     def set_mark(self, row, col, mark):
         """
@@ -57,30 +61,15 @@ class State:
         """
         self._array[row][col] = mark
 
-    def to_code(self):
+    def to_code1(self):
         """
         Get the serializable string for this State
         :return: (string)
         """
         return ''.join(str(Mark(int(x))) for x in self._array.flatten())
 
-    def next_marks(self):
-        """
-        Get the next valid marks that could be replace a blank space in
-        this state
-        :return: (set) of Mark objects
-        """
-        unique, cnt = np.unique(self._array.flatten(), return_counts=True)
-        count = dict(zip(unique, cnt))
-        os = count.get(Mark.OMARK, 0)
-        xes = count.get(Mark.XMARK, 0)
-        if os == xes:
-            return {Mark.OMARK, Mark.XMARK}
-        else:
-            return {Mark.OMARK} if xes > os else {Mark.XMARK}
-
     @classmethod
-    def from_code(cls, code):
+    def from_code1(cls, code):
         """
         Return a State given a serialized string (code)
         :param code: (string) the code to parse
@@ -89,6 +78,124 @@ class State:
         lookup = {repr(mark): mark for mark in Mark}
         array = np.array([lookup[c] for c in code]).reshape(3, 3)
         return State(array)
+
+    def to_code2(self):
+        """
+        Get the serializable string for this State
+        :return: (string)
+        """
+        array_code = ''.join(str(Mark(int(x))) for x in self._array.flatten())
+        desirability = self.desirability or {}
+        des_code = ','.join([str(x) for x in unroll_dict(desirability)])
+        return '|'.join([array_code, des_code])
+
+    @classmethod
+    def from_code2(cls, code):
+        """
+        Return a State given a serialized string (code)
+        :param code: (string) the code to parse
+        :return: (State)
+        """
+        lookup = {repr(mark): mark for mark in Mark}
+        array_code, des_code = code.split('|')
+        array = np.array([lookup[c] for c in array_code]).reshape(3, 3)
+        state = State(array)
+        if des_code:
+            des_list = des_code.split(',')
+            state.desirability = {lookup[k]: int(v) for k, v in roll(des_list)}
+        return state
+
+    @property
+    def is_full(self):
+        return Mark.EMPTY not in list(np.unique(self._array.flatten()))
+
+    def next_marks(self):
+        """
+        Get the next valid marks that could be replace a blank space in
+        this state
+        :return: (set) of Mark objects
+        """
+        unique, cnt = np.unique(self._array.flatten(), return_counts=True)
+        if Mark.EMPTY not in unique:
+            return set()
+        count = dict(zip(unique, cnt))
+        os = count.get(Mark.OMARK, 0)
+        xes = count.get(Mark.XMARK, 0)
+        if os == xes:
+            return {Mark.OMARK, Mark.XMARK}
+        else:
+            return {Mark.OMARK} if xes > os else {Mark.XMARK}
+
+    @property
+    def desirability(self):
+        return self._desirability
+
+    @desirability.setter
+    def desirability(self, value):
+        if not hasattr(value, '__getitem__') and value is not None:
+            raise TypeError('desirability object must sliceable')
+        self._desirability = value
+
+    @classmethod
+    def _roll_rows(cls, array, step=1):
+        for idx, row in enumerate(array):
+            yield np.roll(row, step * idx)
+
+    @classmethod
+    def calculate_desirability(cls, state):
+        """
+        Calculates the immediately-known desirability for a state
+        without any branching
+        :param state: (State) the state
+        :return: (dict) of {Mark: score}
+        """
+        # If we have a winner
+        if state.winner:
+            return {
+                Mark.OMARK: 1 if state.winner is Mark.OMARK else -1,
+                Mark.XMARK: 1 if state.winner is Mark.XMARK else -1
+            }
+
+        # If this game is a draw (no more moves can be made)
+        if state.is_full:
+            return {
+                Mark.OMARK: 0,
+                Mark.XMARK: 0
+            }
+
+        # We just don't know
+        return None
+
+    def _calculate_winner(self):
+        """
+        Calculates the winning mark, or None if no winner in this state
+        :return: (Mark) the winning mark
+        """
+        rows = self._array
+        columns = self._array.transpose()
+        diagonal1 = np.array(list(self._roll_rows(rows, -1)))[:, 0]
+        diagonal2 = np.array(list(self._roll_rows(rows, 1)))[:, -1]
+        diagonals = [diagonal1, diagonal2]
+        rows_cols_diags = chain(rows, columns, diagonals)
+        for line in rows_cols_diags:
+            unique, cnt = np.unique(line, return_counts=True)
+            win_cnt = len(line)
+            if win_cnt in cnt:
+                winner = unique[list(cnt).index(win_cnt)]
+                if winner != Mark.EMPTY:
+                    return Mark(winner)
+        return None
+
+    @property
+    def winner(self):
+        """
+        Returns the winning Mark, or None if no winner in this state
+        :return: (Mark) the winning mark
+        """
+        # Lazy evaluation
+        if self._cached_winner is None:
+            self._cached_winner = self._calculate_winner()
+        return copy(self._cached_winner)
 
     def __getitem__(self, item):
         return self._array[item]

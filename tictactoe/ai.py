@@ -6,6 +6,8 @@ Implementation of the AI
 
 import numpy as np
 from tictactoe import Mark, State
+from itertools import chain
+from .util import apply_xforms
 
 
 def branch1(state, mark):
@@ -45,6 +47,43 @@ def branch(states, mark, depth=1):
     if depth <= 0:
         return
     for state in states:
-        down = branch1(state, mark)
-        next_mark = Mark.get_next(mark)
-        yield from branch(list(down), next_mark, depth - 1)
+        if state.winner is None:
+            down = branch1(state, mark)
+            next_mark = Mark.get_next(mark)
+            yield from branch(list(down), next_mark, depth - 1)
+
+
+def cache_state_desirability(cache, root_state, mark):
+    # Calculate branch states for root state
+    branched = list(branch1(root_state, mark))
+    # Limit operations to cached polymorphs
+    branched_cached = set(cache[state][0] for state in branched)
+
+    if root_state.winner is not None:
+        root_state.desirability = State.calculate_desirability(root_state)
+        return
+
+    for state in branched_cached:
+        if state.winner is not None:
+            state.desirability = State.calculate_desirability(state)
+            cache.update_state(state)
+
+    # Calculate the desirability of the root state
+    desirability = {Mark.OMARK: 0, Mark.XMARK: 0}
+    next_mark = Mark.get_next(mark)
+    for state in branched_cached:
+        # Dynamically calculate desirability if needed
+        if state.desirability is None:
+            cache_state_desirability(cache, state, next_mark)
+            cache.update_state(state)
+        # Sum of branched scores
+        desirability[Mark.OMARK] += state.desirability[Mark.OMARK]
+        desirability[Mark.XMARK] += state.desirability[Mark.XMARK]
+    root_state.desirability = desirability
+
+
+def calculate_next_state_for(cache, root_state, mark):
+    branched = branch1(root_state, mark)
+    branched_cached = list(cache[state] for state in branched)
+    best, xf, ixf = max(branched_cached, key=lambda x: x[0].desirability[mark])
+    return State(apply_xforms(ixf, best[:]))

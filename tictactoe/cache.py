@@ -29,14 +29,24 @@ class StateCache:
         self._cache = set()
 
     def write(self, file_path):
+        data = {
+            'Format': '002',
+            'States': sorted([c.to_code2() for c in self])
+        }
         with open(file_path, 'w', encoding='ascii') as fp:
-            json.dump(sorted([c.to_code() for c in self]), fp)
+            json.dump(data, fp)
 
     def load(self, file_path):
         with open(file_path, 'r') as fp:
             data = json.load(fp)
-        for code in data:
-            self.add(State.from_code(code))
+        _format = int(data['Format'])
+        codes = data['States']
+        if _format == 1:
+            for code in codes:
+                self.add(State.from_code1(code))
+        elif _format == 2:
+            for code in codes:
+                self.add(State.from_code2(code))
 
     @classmethod
     def _get_iso_xforms(cls):
@@ -85,6 +95,29 @@ class StateCache:
         for xform in xforms:
             yield State(apply_xforms(xform, state[:]))
 
+    def add(self, state):
+        """
+        Add a State to the cache
+        :param state: (State) the state
+        """
+        if state not in self:
+            self._cache.add(state)
+
+    def update_state(self, state):
+        """
+        Update a State object reference in the backing cache
+        :param state: (State) the state
+        """
+        if state not in self._cache:
+            raise LookupError('State must already be a direct element of the '
+                              'backing cache set')
+        self._cache.remove(state)
+        self._cache.add(state)
+
+    def clear_desirability(self):
+        for state in self._cache:
+            state.desirability = None
+
     def __contains__(self, item):
         isos = set(self._get_isomorphs(item))
         return any(isos & self._cache)
@@ -93,19 +126,15 @@ class StateCache:
         for xforms, ixforms in self._get_iso_xforms():
             iso = State(apply_xforms(xforms, item[:]))
             if iso in self._cache:
+
+                # TODO: HACK ALERT! FIX THIS!
+                iso = next(state for state in self._cache if state == iso)
+
                 return iso, xforms, ixforms
         return None, None, None
 
     def __iter__(self):
         yield from self._cache
-
-    def add(self, state):
-        """
-        Add a State to the cache
-        :param state: (State) the state
-        """
-        if state not in self:
-            self._cache.add(state)
 
     def __len__(self):
         return len(self._cache)

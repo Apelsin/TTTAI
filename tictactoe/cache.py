@@ -131,6 +131,8 @@ class StateCache:
             if iso in self._cache:
 
                 # TODO: HACK ALERT! FIX THIS!
+                # Comment out this line before invoking
+                # ai.cache_state_desirability
                 iso = next(state for state in self._cache if state == iso)
 
                 return iso, xforms, ixforms

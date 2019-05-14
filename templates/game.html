@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block contents %}
+<div id="main-game-board" class="game-board front-and-center">
+    {% for mark in board_marks %}
+    <div class="cell no-select"></div>
+    {% endfor %}
+</div>
+{% endblock %}
+{% block scripting_variables %}
+WEBGAME_VARS['session-id'] = {{ session_id }}
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/webgame.js') }}"></script>
+{% endblock %}

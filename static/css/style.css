@@ -1,0 +1,43 @@
+html {
+    font-family: "Lucinda Grande", "Lucinda Sans Unicode", Helvetica, Arial, Verdana, sans-serif;
+}
+
+.front-and-center {
+    margin: auto;
+}
+
+.game-board {
+    width: 25vw;
+    height: 25vw;
+    grid-template-columns: 1fr 1fr 1fr;
+    background-color: #BBB;
+    display: grid;
+    border-radius: 29px;
+    grid-gap: 5px;
+    padding: 5px;
+}
+
+.game-board .cell {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    background-color: #EEE;
+    vertical-align: middle;
+    text-align: center;
+    font-size: 800%;
+    font-weight: 700;
+    color: #555;
+    border-radius: 24px;
+}
+
+.no-select {
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
+}

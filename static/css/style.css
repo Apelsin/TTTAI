@@ -2,6 +2,19 @@ html {
     font-family: "Lucinda Grande", "Lucinda Sans Unicode", Helvetica, Arial, Verdana, sans-serif;
 }
 
+body {
+    color: #EEE;
+    background-color: #333;
+}
+
+a {
+    color: #FFF;
+}
+
+a:visited {
+    color: #AAF;
+}
+
 .front-and-center {
     margin: auto;
 }
@@ -9,8 +22,9 @@ html {
 .game-board {
     width: 25vw;
     height: 25vw;
-    grid-template-columns: 1fr 1fr 1fr;
-    background-color: #BBB;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    background-color: #999;
     display: grid;
     border-radius: 29px;
     grid-gap: 5px;
@@ -21,14 +35,14 @@ html {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 100%;
-    height: 100%;
-    background-color: #EEE;
+    min-width: 100%;
+    min-height: 100%;
+    background-color: #444;
     vertical-align: middle;
     text-align: center;
     font-size: 800%;
     font-weight: 700;
-    color: #555;
+    color: #999;
     border-radius: 24px;
 }
 

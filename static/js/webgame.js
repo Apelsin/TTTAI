@@ -8,7 +8,6 @@ async function stuff()
     //let winner = Marks.getLabel(data['winner']);
     let flat = raw_board.flat();
     let board_state = flat.map(e => MarkSymbols[e.toString()]);
-    console.log(board_state);
     view.setBoard(board_state);
 }
 

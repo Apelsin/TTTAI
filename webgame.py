@@ -1,13 +1,16 @@
-from flask import Flask, request, render_template, redirect, url_for, abort
+from flask import Flask, request, render_template, redirect, url_for, abort, Blueprint
 from tictactoe import State, Mark
 from tictactoe.cache import StateCache
 from tictactoe.ai import calculate_next_state_for
 import json
 from random import randint
+import os
 
-app = Flask(__name__)
-
+FLASK_APPLICATION_ROOT = os.environ.get('FLASK_APPLICATION_ROOT', '')
 EMPTY_BOARD = list(State()[:].flatten())  # No touchy
+ACTIVE_SESSIONS = {}
+STATE_CACHE = StateCache()
+STATE_CACHE.load('state-cache.json')
 
 
 class SessionData:
@@ -15,25 +18,28 @@ class SessionData:
         self.state = State()
         self.mark = starting_mark
 
+        
+bp = Blueprint('main', __name__, template_folder='templates', static_folder='static')
 
-ACTIVE_SESSIONS = {}
+@bp.context_processor
+def globals_processor():
+    def _FLASK_APPLICATION_ROOT():
+        return FLASK_APPLICATION_ROOT
+    return { 'FLASK_APPLICATION_ROOT': _FLASK_APPLICATION_ROOT }
 
-STATE_CACHE = StateCache()
-STATE_CACHE.load('state-cache.json')
-
-@app.route('/')
+@bp.route('/')
 def home():
     return render_template('home.html')
 
 
-@app.route('/start-new-game')
+@bp.route('/start-new-game')
 def start_new_game():
     sid = randint(10000, 99999)
     ACTIVE_SESSIONS[sid] = ACTIVE_SESSIONS.get(sid, SessionData(Mark.OMARK))
-    return redirect(url_for('session', session_id=sid))
+    return redirect(url_for('main.session', session_id=sid))
 
 
-@app.route('/session/<session_id>')
+@bp.route('/session/<session_id>')
 def session(session_id):
     try:
         session = ACTIVE_SESSIONS[int(session_id)]
@@ -52,7 +58,7 @@ def advance_session(session):
     session.mark = Mark.get_next(session.mark)
 
 
-@app.route('/session-data/<session_id>')
+@bp.route('/session-data/<session_id>')
 def session_data(session_id):
     try:
         session = ACTIVE_SESSIONS[int(session_id)]
@@ -66,6 +72,10 @@ def session_data(session_id):
         'winner': winner
     }
     return json.dumps(state)
+
+
+app = Flask(__name__)
+app.register_blueprint(bp, url_prefix=FLASK_APPLICATION_ROOT)
 
 
 def main():

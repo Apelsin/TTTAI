@@ -1,14 +1,17 @@
 <!doctype html>
 <title>{% block title %}{% endblock %}</title>
-<link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" />
+<link href="{{ url_for('main.static', filename='css/style.css') }}" rel="stylesheet" />
 {% block contents %}{% endblock %}
 {% block base_scripts %}
 <script>
-    var WEBGAME_VARS = {};
+    const APPLICATION = {
+        URL_PREFIX: "{{ FLASK_APPLICATION_ROOT() }}"
+    };
+    var WEBGAME_VARS = {}
     {% block scripting_variables %}{% endblock %}
 </script>
-<script src="{{ url_for('static', filename='js/enum.js') }}"></script>
-<script src="{{ url_for('static', filename='js/tttai.js') }}"></script>
+<script src="{{ url_for('main.static', filename='js/enum.js') }}"></script>
+<script src="{{ url_for('main.static', filename='js/tttai.js') }}"></script>
 {% endblock %}
 {% block scripts %}
 {% endblock %}

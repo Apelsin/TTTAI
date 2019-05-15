@@ -6,7 +6,6 @@ RUN apt-get update -y && \
 COPY ./requirements.txt /app/requirements.txt
 WORKDIR /app
 RUN pip3 install -r requirements.txt
-RUN pip3 install uwsgi
 COPY . /app
 
 # Make Flask happy
@@ -17,4 +16,4 @@ ENV LANG C.UTF-8
 ENV FLASK_APP webgame.py
 
 ENTRYPOINT [ "bash", "-c" ]
-CMD ["uwsgi --socket 0.0.0.0:7777 --module webgame --callable app"]
+CMD ["flask run --host=0.0.0.0 --port=80"]

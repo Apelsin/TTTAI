@@ -17,4 +17,4 @@ ENV LANG C.UTF-8
 ENV FLASK_APP webgame.py
 
 ENTRYPOINT [ "bash", "-c" ]
-CMD ["uwsgi --socket 0.0.0.0:7777 --module webgame.py --callable app"]
+CMD ["uwsgi --socket 0.0.0.0:7777 --module webgame --callable app"]

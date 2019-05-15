@@ -10,5 +10,5 @@ COPY . /app
 
 ENV FLASK_APP webgame
 
-ENTRYPOINT [ "flask" ]
-CMD [ "run", "--host=0.0.0.0", "--port=80" ]
+ENTRYPOINT [ "bash -c" ]
+CMD [ "-c", "flask", "run", "--host=0.0.0.0", "--port=80" ]

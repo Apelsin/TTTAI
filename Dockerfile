@@ -8,6 +8,11 @@ WORKDIR /app
 RUN pip3 install -r requirements.txt
 COPY . /app
 
+# Make Flask happy
+ENV LC_ALL C.UTF-8
+ENV LANG C.UTF-8
+
+# Flask app
 ENV FLASK_APP webgame.py
 
 ENTRYPOINT [ "bash", "-c" ]

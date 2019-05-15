@@ -4,8 +4,10 @@ from tictactoe.cache import StateCache
 from tictactoe.ai import calculate_next_state_for
 import json
 from random import randint
+import os
 
 app = Flask(__name__)
+app.config['SESSION_COOKIE_PATH'] = os.environ.get('FLASK_APPLICATION_ROOT', '/')
 
 EMPTY_BOARD = list(State()[:].flatten())  # No touchy
 
@@ -19,6 +21,7 @@ class SessionData:
 ACTIVE_SESSIONS = {}
 
 STATE_CACHE = StateCache()
+STATE_CACHE.load('state-cache.json')
 
 @app.route('/')
 def home():
@@ -68,8 +71,7 @@ def session_data(session_id):
 
 
 def main():
-    STATE_CACHE.load('state-cache.json')
-    app.run(debug=True)
+    app.run()
 
 
 if __name__ == '__main__':

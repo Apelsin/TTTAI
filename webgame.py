@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, redirect, url_for, abort, Blueprint
+from flask import Flask, Blueprint, render_template, redirect, url_for
 from tictactoe import State, Mark
 from tictactoe.cache import StateCache
 from tictactoe.ai import calculate_next_state_for
@@ -18,14 +18,20 @@ class SessionData:
         self.state = State()
         self.mark = starting_mark
 
-        
-bp = Blueprint('main', __name__, template_folder='templates', static_folder='static')
+
+# Used in order to prepend the FLASK_APPLICATION_ROOT prefix
+bp = Blueprint('main',
+               __name__,
+               template_folder='templates',
+               static_folder='static')
+
 
 @bp.context_processor
 def globals_processor():
-    def _FLASK_APPLICATION_ROOT():
+    def flask_application_root():
         return FLASK_APPLICATION_ROOT
-    return { 'FLASK_APPLICATION_ROOT': _FLASK_APPLICATION_ROOT }
+    return {'FLASK_APPLICATION_ROOT': flask_application_root}
+
 
 @bp.route('/')
 def home():
@@ -41,10 +47,8 @@ def start_new_game():
 
 @bp.route('/session/<session_id>')
 def session(session_id):
-    try:
-        session = ACTIVE_SESSIONS[int(session_id)]
-    except KeyError as e:
-        return repr(e), 404  # TODO
+    if int(session_id) not in ACTIVE_SESSIONS:
+        return f'not found.', 404  # TODO
     return render_template(
         'game.html',
         board_marks=EMPTY_BOARD,
@@ -60,10 +64,8 @@ def advance_session(session):
 
 @bp.route('/session-data/<session_id>')
 def session_data(session_id):
-    try:
-        session = ACTIVE_SESSIONS[int(session_id)]
-    except KeyError as e:
-        return str(e), 404
+    if int(session_id) not in ACTIVE_SESSIONS:
+        return '', 404  # TODO
     advance_session(session)
     board = session.state[:].tolist()
     winner = session.state.winner

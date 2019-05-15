@@ -6,7 +6,7 @@ RUN apt-get update -y && \
 COPY ./requirements.txt /app/requirements.txt
 WORKDIR /app
 RUN pip3 install -r requirements.txt
-RUN pip3 install -y uwsgi
+RUN pip3 install uwsgi
 COPY . /app
 
 # Make Flask happy

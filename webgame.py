@@ -19,6 +19,7 @@ class SessionData:
 ACTIVE_SESSIONS = {}
 
 STATE_CACHE = StateCache()
+STATE_CACHE.load('state-cache.json')
 
 @app.route('/')
 def home():
@@ -68,7 +69,6 @@ def session_data(session_id):
 
 
 def main():
-    STATE_CACHE.load('state-cache.json')
     app.run(debug=True)
 
 

@@ -1,9 +1,12 @@
 <!doctype html>
-<title>{% block title %}{% endblock %}</title>
-<link href="{{ url_for('main.static', filename='css/style.css') }}" rel="stylesheet" />
+<head>
+    <title>{% block title %}TTTAI{% endblock %}</title>
+    <link href="{{ url_for('main.static', filename='css/style.css') }}" rel="stylesheet" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
 <div class="front-and-center" id="contents">
     <h1 class="lorg compact"><a href="{{ url_for('main.home') }}">TTTAI</a></h1>
-{% block contents %}{% endblock %}
+    {% block contents %}{% endblock %}
 </div>
 {% block base_scripts %}
 <script>

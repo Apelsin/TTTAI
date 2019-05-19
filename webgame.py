@@ -1,55 +1,66 @@
-from flask import Flask, request, render_template, redirect, url_for, abort
+from flask import Flask, Blueprint, render_template, redirect, request, url_for
 from tictactoe import State, Mark
 from tictactoe.cache import StateCache
 from tictactoe.ai import calculate_next_state_for
 import json
 from random import randint
+import os
 
-app = Flask(__name__)
-
+FLASK_APPLICATION_ROOT = os.environ.get('FLASK_APPLICATION_ROOT', '')
 EMPTY_BOARD = list(State()[:].flatten())  # No touchy
+ACTIVE_SESSIONS = {}
+STATE_CACHE = StateCache()
+STATE_CACHE.load('state-cache.json')
 
 
 class SessionData:
-    def __init__(self, starting_mark):
+    def __init__(self):
         self.state = State()
         self.mark = None
 
 
-ACTIVE_SESSIONS = {}
+# Used in order to prepend the FLASK_APPLICATION_ROOT prefix
+bp = Blueprint('main',
+               __name__,
+               template_folder='templates',
+               static_folder='static')
 
-STATE_CACHE = StateCache()
 
-@app.route('/')
+@bp.context_processor
+def globals_processor():
+    def flask_application_root():
+        return FLASK_APPLICATION_ROOT
+    return {'FLASK_APPLICATION_ROOT': flask_application_root}
+
+
+@bp.route('/')
 def home():
     return render_template('home.html')
 
 
-@app.route('/start-new-game')
+@bp.route('/start-new-game')
 def start_new_game():
     sid = randint(10000, 99999)
-    ACTIVE_SESSIONS[sid] = ACTIVE_SESSIONS.get(sid, SessionData(Mark.OMARK))
-    return redirect(url_for('session', session_id=sid))
+    ACTIVE_SESSIONS[sid] = ACTIVE_SESSIONS.get(sid, SessionData())
+    return redirect(url_for('main.session', session_id=sid))
 
 
-@app.route('/session/<session_id>')
+@bp.route('/session/<session_id>')
 def session(session_id):
-    try:
-        session = ACTIVE_SESSIONS[int(session_id)]
-    except KeyError as e:
-        return repr(e), 404  # TODO
+    if int(session_id) not in ACTIVE_SESSIONS:
+        return 'Not found.', 404  # TODO
     return render_template(
         'game.html',
         board_marks=EMPTY_BOARD,
         session_id=session_id)
 
 
-@app.route('/session-data/<session_id>', methods=['GET'])
+@bp.route('/session-data/<session_id>', methods=['GET'])
 def session_data(session_id):
     try:
         session = ACTIVE_SESSIONS[int(session_id)]
     except KeyError as e:
-        return str(e), 404
+        return 'Not found.', 404  # TODO
     board = session.state[:].tolist()
     winner = session.state.winner
     state = {
@@ -59,7 +70,7 @@ def session_data(session_id):
     return json.dumps(state)
 
 
-@app.route('/session-data/<session_id>', methods=['POST'])
+@bp.route('/session-data/<session_id>', methods=['POST'])
 def session_data_submit(session_id):
     try:
         session = ACTIVE_SESSIONS[int(session_id)]
@@ -100,8 +111,11 @@ def session_data_submit(session_id):
     return json.dumps(state)
 
 
+app = Flask(__name__)
+app.register_blueprint(bp, url_prefix=FLASK_APPLICATION_ROOT)
+
+
 def main():
-    STATE_CACHE.load('state-cache.json')
     app.run(debug=True)
 
 

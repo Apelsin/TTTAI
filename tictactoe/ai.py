@@ -80,7 +80,7 @@ def cache_state_desirability(cache, root_state, mark):
     next_mark = Mark.get_next(mark)
     for state in branched_cached:
         # Dynamically calculate desirability if needed
-        if state.desirability is None:
+        if state.winner is None:
             cache_state_desirability(cache, state, next_mark)
             cache.update_state(state)
         # Sum of branched scores
@@ -102,4 +102,4 @@ def calculate_next_state_for(cache, root_state, mark):
     branched = branch1(root_state, mark)
     branched_cached = list(cache[state] for state in branched)
     best, xf, ixf = max(branched_cached, key=lambda x: x[0].desirability[mark])
-    return State(apply_xforms(ixf, best[:]))
+    return State(apply_xforms(ixf, best[:].copy()))

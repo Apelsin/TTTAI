@@ -44,20 +44,12 @@ def session(session_id):
         session_id=session_id)
 
 
-def advance_session(session):
-    next_board_state = calculate_next_state_for(
-        STATE_CACHE, session.state, session.mark)
-    session.state = next_board_state
-    session.mark = Mark.get_next(session.mark)
-
-
 @app.route('/session-data/<session_id>', methods=['GET'])
 def session_data(session_id):
     try:
         session = ACTIVE_SESSIONS[int(session_id)]
     except KeyError as e:
         return str(e), 404
-    #advance_session(session)
     board = session.state[:].tolist()
     winner = session.state.winner
     state = {
@@ -91,7 +83,6 @@ def session_data_submit(session_id):
                     raise Exception('Illegal board move!')
             session.state.set_mark(row, col, player_mark)
             try:
-                print(len(STATE_CACHE))
                 next_board_state = calculate_next_state_for(
                     STATE_CACHE, session.state, session.mark)
                 session.state = next_board_state

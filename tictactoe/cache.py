@@ -18,7 +18,7 @@ class StateCache:
     """
 
     def __init__(self):
-        self._cache = set()
+        self._cache = {}
 
     def write(self, file_path):
         """
@@ -47,6 +47,10 @@ class StateCache:
         elif _format == 2:
             for code in codes:
                 self.add(State.from_code2(code))
+
+    @classmethod
+    def _hash_board(cls, state):
+        return hash(tuple(state[:].flatten()))
 
     @classmethod
     def _get_iso_xforms(cls):
@@ -101,45 +105,43 @@ class StateCache:
         :param state: (State) the state
         """
         if state not in self:
-            self._cache.add(state)
+            self._cache[self._hash_board(state)] = state
 
     def update_state(self, state):
         """
         Update a State object reference in the backing cache
         :param state: (State) the state
         """
-        if state not in self._cache:
+        state_hash = self._hash_board(state)
+        if state_hash not in self._cache:
             raise LookupError('State must already be a direct element of the '
                               'backing cache set')
-        self._cache.remove(state)
-        self._cache.add(state)
+        del self._cache[state_hash]
+        self._cache[state_hash] = state
 
     def clear_desirability(self):
         """
         Set the desirability of all States in the cache to None
         """
-        for state in self._cache:
+        for state in self._cache.values():
             state.desirability = None
 
     def __contains__(self, item):
         isos = set(self._get_isomorphs(item))
-        return any(isos & self._cache)
+        return any(self._hash_board(iso) in self._cache for iso in isos)
 
     def __getitem__(self, item):
         for xforms, ixforms in self._get_iso_xforms():
             iso = State(apply_xforms(xforms, item[:]))
-            if iso in self._cache:
-
-                # TODO: HACK ALERT! FIX THIS!
-                # Comment out this line before invoking
-                # ai.cache_state_desirability
-                iso = next(state for state in self._cache if state == iso)
-
-                return iso, xforms, ixforms
+            # Retrieve the actual state object based on the board state
+            # hash of the isomorph being present in the cache dictionary
+            board_hash = self._hash_board(iso)
+            if board_hash in self._cache:
+                return self._cache[board_hash], xforms, ixforms
         return None, None, None
 
     def __iter__(self):
-        yield from self._cache
+        yield from self._cache.values()
 
     def __len__(self):
         return len(self._cache)

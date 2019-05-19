@@ -3,20 +3,28 @@ html {
 }
 
 body {
-    color: #EEE;
+    color: #CCC;
     background-color: #333;
 }
 
-a {
-    color: #FFF;
+a:visited {
+    color: #AAE;
 }
 
-a:visited {
-    color: #AAF;
+h1 a:link,
+h1 a:visited {
+    color: inherit;
+    text-decoration: none;
+}
+
+#contents {
+    width: 25vw;
+    min-width: 24em;
 }
 
 .front-and-center {
     margin: auto;
+    text-align: center;
 }
 
 .game-board {
@@ -54,4 +62,29 @@ a:visited {
         -ms-user-select: none; /* Internet Explorer/Edge */
             user-select: none; /* Non-prefixed version, currently
                                   supported by Chrome and Opera */
+}
+
+ul.credits,
+ol.credits {
+    display: block;
+    margin: 1em auto;
+    text-align: initial;
+    list-style: none;
+    width: 16em;
+}
+
+.lorg {
+    font-size: 400%;
+}
+
+.medium {
+    font-size: 300%;
+}
+
+.compact {
+    margin: 0;
+}
+
+.hidden {
+    display: none;
 }

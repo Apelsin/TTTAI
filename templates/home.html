@@ -1,6 +1,11 @@
 {% extends 'base.html' %}
 {% block contents %}
-<div class="front-and-center">
-    <a href="{{ url_for('start_new_game') }}">Start new game</a>
-</div>
+<p>SJSU CS 156 Final Project</p>
+<h2>brought to you by...</h2>
+<ul class="credits">
+    <li>Vincent Brubaker-Gianakos</li>
+    <li>Ojen Goshtasb</li>
+    <li>Mebin Skaria</li>
+</ul>
+<a class="medium" href="{{ url_for('start_new_game') }}">New game</a>
 {% endblock %}

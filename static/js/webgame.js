@@ -1,12 +1,27 @@
 let view = new BoardView(document.getElementById('main-game-board'), Marks.OMARK);
+let win_field = document.getElementById('win-field')
+
 let last_good_board = null;
 
 async function onValidGameStateResponse(response) {
     let data = await response.json();
     let board = data['board'].flat();
-    //let winner = Marks.getLabel(data['winner']);
+    let winner = data['winner'];
     view.setBoard(board);
     last_good_board = board;
+    let board_full = board.every((c) => c !== 0);
+    if(winner != null)
+    {
+        winner = Marks.getLabel(winner);
+        view.setWinner(winner);
+        win_field.innerHTML = `${winner} wins!`;
+    }
+    else if(board_full)
+        win_field.innerHTML = 'Draw.';
+    if(winner != null || board_full)
+        for(e of document.getElementsByClassName('hide-until-win'))
+            e.classList.remove('hidden');
+
 }
 
 function revertBoard() {

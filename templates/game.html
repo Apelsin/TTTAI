@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 {% block contents %}
-<div id="main-game-board" class="game-board front-and-center">
-    {% for mark in board_marks %}
-    <div class="cell no-select"></div>
-    {% endfor %}
-</div>
+<div id="main-game-board" class="game-board">
+    {% for mark in board_marks %}<div class="cell no-select"></div>
+{% endfor %}</div>
+<div class="lorg" id="win-field"></div>
+<a class="medium hide-until-win hidden" href="{{ url_for('start_new_game') }}">Play again</a>
 {% endblock %}
 {% block scripting_variables %}
 WEBGAME_VARS['session-id'] = {{ session_id }}

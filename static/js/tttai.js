@@ -10,6 +10,7 @@ class BoardView
     constructor(element, mark) {
         this.element = element;
         this.mark = mark;
+        this.winner = null;
         this.numberOfColumns = 3;
         for(let i = 0; i < element.children.length; i++) {
             let cell = this.element.children[i];
@@ -18,7 +19,9 @@ class BoardView
     }
 
     handleCellClicked(cell_index, e) {
-        this.setMark(cell_index);
+        if(this.winner != null)
+            return;
+        this.setMark(cell_index, this.mark);
         event = new CustomEvent('marked', {
             detail : {
                 cellIndex: cell_index,
@@ -37,8 +40,12 @@ class BoardView
         }
     }
 
+    setWinner(winner) {
+        this.winner = winner;
+    }
+
     setMark(index, mark) {
         let cell = this.element.children[index];
-        cell.innerHTML = MarkSymbols[mark]
+        cell.innerHTML = MarkSymbols[mark];
     }
 }

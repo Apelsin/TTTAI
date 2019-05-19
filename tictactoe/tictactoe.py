@@ -238,7 +238,9 @@ class State:
         return np.array_equal(self._array, other._array)
 
     def __hash__(self):
-        return hash(tuple(self._array.flatten()))
+        board_hash = hash(tuple(self._array.flatten()))
+        desirability_hash = hash(tuple(self.desirability or []))
+        return board_hash ^ desirability_hash
 
     def __contains__(self, item):
         return item in self._array.flatten()

@@ -4,7 +4,6 @@ TTTAI
 Tic-Tac-Toe AI runner
 """
 
-import numpy as np
 from tictactoe import State, Mark
 from tictactoe.cache import StateCache
 from tictactoe.ai import cache_state_desirability, calculate_next_state_for
@@ -36,8 +35,7 @@ def recalculate_desirability(cache):
 def main():
     cache = StateCache()
     cache.load('state-cache.json')
-    play_self_game(cache)
-    #recalculate_desirability(cache)
+    recalculate_desirability(cache)
 
 
 if __name__ == '__main__':

@@ -1,7 +1,10 @@
 <!doctype html>
 <title>{% block title %}{% endblock %}</title>
 <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" />
+<div class="front-and-center" id="contents">
+    <h1 class="lorg compact"><a href="{{ url_for('home') }}">TTTAI</a></h1>
 {% block contents %}{% endblock %}
+</div>
 {% block base_scripts %}
 <script>
     var WEBGAME_VARS = {};

@@ -38,7 +38,7 @@ async function handleMarked(e) {
     };
     form.append('args', JSON.stringify(args))
     let response = await fetch(
-        `/session-data/${WEBGAME_VARS["session-id"]}`,
+        `${APPLICATION.URL_PREFIX}/session-data/${WEBGAME_VARS["session-id"]}`,
         {
             method: 'POST',
             body: form
@@ -52,7 +52,7 @@ async function handleMarked(e) {
 async function setup()
 {
     view.element.addEventListener('marked', handleMarked);
-    let response = await fetch(`/session-data/${WEBGAME_VARS["session-id"]}`);
+    let response = await fetch(`${APPLICATION.URL_PREFIX}/session-data/${WEBGAME_VARS["session-id"]}`);
     if(response.ok)
         await onValidGameStateResponse(response);
     else

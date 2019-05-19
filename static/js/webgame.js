@@ -12,9 +12,8 @@ async function onValidGameStateResponse(response) {
     let board_full = board.every((c) => c !== 0);
     if(winner != null)
     {
-        winner = Marks.getLabel(winner);
         view.setWinner(winner);
-        win_field.innerHTML = `${winner} wins!`;
+        win_field.innerHTML = `${MarkSymbols[winner]} wins!`;
     }
     else if(board_full)
         win_field.innerHTML = 'Draw.';

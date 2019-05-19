@@ -4,7 +4,7 @@ html {
 
 body {
     color: #CCC;
-    background-color: #333;
+    background: #333 url('../img/background-pattern.png');
     margin: 1em;
 }
 
@@ -101,12 +101,16 @@ ol.credits {
     text-align: center;
 }
 
-.lorg {
+.heug {
     font-size: 400%;
 }
 
-.medium {
+.lorg {
     font-size: 300%;
+}
+
+.medium {
+    font-size: 200%;
 }
 
 .compact {

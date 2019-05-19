@@ -61,6 +61,17 @@ class State:
         """
         self._array[row][col] = mark
 
+
+    def get_mark(self, row, col):
+        """
+        Return the mark on the board at the given row and column index
+        :param row: (int)
+        :param col: (int)
+        :return: (Mark)
+        """
+        return Mark(self._array[row][col])
+
+
     def to_code1(self):
         """
         Get the serializable string for this State

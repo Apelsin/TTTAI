@@ -13,7 +13,7 @@ EMPTY_BOARD = list(State()[:].flatten())  # No touchy
 class SessionData:
     def __init__(self, starting_mark):
         self.state = State()
-        self.mark = starting_mark
+        self.mark = None
 
 
 ACTIVE_SESSIONS = {}
@@ -51,13 +51,55 @@ def advance_session(session):
     session.mark = Mark.get_next(session.mark)
 
 
-@app.route('/session-data/<session_id>')
+@app.route('/session-data/<session_id>', methods=['GET'])
 def session_data(session_id):
     try:
         session = ACTIVE_SESSIONS[int(session_id)]
     except KeyError as e:
         return str(e), 404
-    advance_session(session)
+    #advance_session(session)
+    board = session.state[:].tolist()
+    winner = session.state.winner
+    state = {
+        'board': board,
+        'winner': winner
+    }
+    return json.dumps(state)
+
+
+@app.route('/session-data/<session_id>', methods=['POST'])
+def session_data_submit(session_id):
+    try:
+        session = ACTIVE_SESSIONS[int(session_id)]
+    except KeyError as e:
+        return str(e), 404
+    try:
+        verb = request.form.get('verb')
+        if verb.lower() == 'set-mark':
+            args = json.loads(request.form.get('args'))
+            player_mark = Mark(args['mark'])
+            row = args['row']
+            col = args['column']
+
+            next_mark = Mark.get_next(player_mark)
+            if session.mark is None:
+                session.mark = next_mark
+            else:
+                wrong_mark = session.mark != next_mark
+                overwrite = session.state.get_mark(row, col) != Mark.EMPTY
+                if wrong_mark or overwrite :
+                    raise Exception('Illegal board move!')
+            session.state.set_mark(row, col, player_mark)
+            try:
+                print(len(STATE_CACHE))
+                next_board_state = calculate_next_state_for(
+                    STATE_CACHE, session.state, session.mark)
+                session.state = next_board_state
+            except ValueError:
+                pass
+
+    except Exception as e:
+        raise e
     board = session.state[:].tolist()
     winner = session.state.winner
     state = {

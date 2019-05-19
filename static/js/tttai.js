@@ -7,15 +7,38 @@ const MarkSymbols = {
 
 class BoardView
 {
-    constructor(element) {
+    constructor(element, mark) {
         this.element = element;
+        this.mark = mark;
+        this.numberOfColumns = 3;
+        for(let i = 0; i < element.children.length; i++) {
+            let cell = this.element.children[i];
+            cell.addEventListener('click', (e) => this.handleCellClicked(i, e));
+        }
+    }
+
+    handleCellClicked(cell_index, e) {
+        this.setMark(cell_index);
+        event = new CustomEvent('marked', {
+            detail : {
+                cellIndex: cell_index,
+                row: Math.floor(cell_index / this.numberOfColumns),
+                column: cell_index % this.numberOfColumns,
+                mark: this.mark
+            }
+        });
+        this.element.dispatchEvent(event);
     }
 
     setBoard(board) {
         for(let i = 0; i < board.length; i++) {
             let cell = this.element.children[i];
-            //let cell_contents = cell.getElementsByClassName('cell-contents')[0];
-            cell.innerHTML = board[i];
+            cell.innerHTML = MarkSymbols[board[i]];
         }
+    }
+
+    setMark(index, mark) {
+        let cell = this.element.children[index];
+        cell.innerHTML = MarkSymbols[mark]
     }
 }

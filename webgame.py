@@ -90,15 +90,16 @@ def session_data_submit(session_id):
             else:
                 wrong_mark = session.mark != next_mark
                 overwrite = session.state.get_mark(row, col) != Mark.EMPTY
-                if wrong_mark or overwrite :
+                if wrong_mark or overwrite:
                     raise Exception('Illegal board move!')
             session.state.set_mark(row, col, player_mark)
-            try:
-                next_board_state = calculate_next_state_for(
-                    STATE_CACHE, session.state, session.mark)
-                session.state = next_board_state
-            except ValueError:
-                pass
+            if session.state.winner is None:
+                try:
+                    next_board_state = calculate_next_state_for(
+                        STATE_CACHE, session.state, session.mark)
+                    session.state = next_board_state
+                except ValueError:
+                    pass
 
     except Exception as e:
         raise e

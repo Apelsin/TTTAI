@@ -29,13 +29,13 @@ def recalculate_desirability(cache):
     cache.clear_desirability()
     cache_state_desirability(cache, State(), Mark.OMARK)
     cache_state_desirability(cache, State(), Mark.XMARK)
-    cache.write('state-cache.json')
 
 
 def main():
     cache = StateCache()
     cache.load('state-cache.json')
     recalculate_desirability(cache)
+    cache.write('state-cache.json')
 
 
 if __name__ == '__main__':

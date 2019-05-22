@@ -6,7 +6,7 @@ Tests various classes and functions in the tictactoe modules
 
 from unittest import TestCase
 from tictactoe import Mark, State
-from tictactoe.ai import branch
+from tictactoe.ai import branch, calculate_next_state_for
 from tictactoe.cache import StateCache
 from tictactoe.util import apply_xforms
 import numpy as np
@@ -23,6 +23,7 @@ class TicTacToeTester(TestCase):
         self.statex = State(np.array([[2, 0, 0], [0, 0, 0], [0, 0, 0]]))
         self.xwins1 = State(np.array([[2, 0, 0], [1, 2, 1], [1, 0, 2]]))
         self.owins1 = State(np.array([[0, 1, 2], [2, 1, 0], [0, 1, 0]]))
+        self.bug1_board = State(np.array([[2, 0, 2], [0, 2, 1], [1, 1, 1]]))
         self.cache = StateCache()
         self.cache.load('state-cache.json')
 
@@ -79,3 +80,20 @@ class TicTacToeTester(TestCase):
     def test_winner(self):
         self.assertEqual(self.xwins1.winner, Mark.XMARK)
         self.assertEqual(self.owins1.winner, Mark.OMARK)
+
+    # def test_bug1(self):
+    #     self.assertEqual(self.bug1_board.winner, Mark.OMARK)
+    #     #calculate_next_state_for(self.cache, self.bug1_board, Mark.XMARK)
+
+    def test_isomorphs_debug(self):
+        stuff = [n for n in '██████    ██████    █    ']
+        ident = np.array(stuff).reshape((5, 5))
+
+        def _print_array(array):
+            for row in array:
+                print(''.join([r*2 for r in row]))
+
+        for xforms, ixforms in StateCache._get_iso_xforms():
+            iso = apply_xforms(xforms, ident)
+            print()
+            _print_array(iso)

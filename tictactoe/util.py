@@ -20,6 +20,15 @@ def apply_xforms(xforms, a):
     return a
 
 
+def rot180(a):
+    """
+    Rotate an array clockwise by 180 degrees
+    :param a: (ndarray) the array
+    :return: (ndarray) the array rotated 180 degrees clockwise
+    """
+    return rot90(a, 2)
+
+
 def rot270(a):
     """
     Rotate an array clockwise by 90 degrees

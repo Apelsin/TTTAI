@@ -9,7 +9,7 @@ import json
 from tictactoe import Mark, State
 from tictactoe.ai import branch
 from tictactoe.util import apply_xforms
-from .util import rot270
+from .util import rot180, rot270
 
 
 class StateCache:
@@ -59,34 +59,14 @@ class StateCache:
         generating all geometrical isomorphs of a game state.
         :return: (generator) of tuples (xform sequence, inv. xform seq.)
         """
-        yield [], []
-        a = [np.rot90]
-        ainv = [rot270]
-        yield a, ainv
-        b = [np.transpose]
-        binv = [np.transpose]
-        yield b, binv
-        c = a + [np.transpose]
-        cinv = [np.transpose] + ainv
-        yield c, cinv
-        d = a + [np.rot90]
-        dinv = [rot270] + ainv
-        yield d, dinv
-        e = b + [np.rot90]
-        einv = [rot270] + binv
-        yield e, einv
-        f = c + [np.rot90]
-        finv = [rot270] + cinv
-        yield f, finv
-        g = d + [np.transpose]
-        ginv = [np.transpose] + dinv
-        yield g, ginv
-        h = f + [np.rot90]
-        hinv = [rot270] + finv
-        yield h, hinv
-        i = e + [np.transpose]
-        iinv = [np.transpose] + einv
-        yield i, iinv
+        yield [], []  # Identity
+        yield [np.fliplr], [np.fliplr]
+        yield [np.flipud], [np.flipud]
+        yield [np.rot90], [rot270]
+        yield [rot180], [rot180]
+        yield [rot270], [np.rot90]
+        yield [np.rot90, np.fliplr], [np.fliplr, rot270]
+        yield [rot270, np.fliplr], [np.fliplr, np.rot90]
 
     @classmethod
     def _get_isomorphs(cls, state):

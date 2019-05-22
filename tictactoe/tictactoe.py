@@ -113,7 +113,7 @@ class State:
         state = State(array)
         if des_code:
             des_list = des_code.split(',')
-            state.desirability = {lookup[k]: int(v) for k, v in roll(des_list)}
+            state.desirability = {lookup[k]: float(v) for k, v in roll(des_list)}
         return state
 
     @property
@@ -176,8 +176,8 @@ class State:
         # If we have a winner
         if state.winner:
             return {
-                Mark.OMARK: 1 if state.winner is Mark.OMARK else -2,
-                Mark.XMARK: 1 if state.winner is Mark.XMARK else -2
+                Mark.OMARK: 1 if state.winner is Mark.OMARK else -1,
+                Mark.XMARK: 1 if state.winner is Mark.XMARK else -1
             }
 
         # If this game is a draw (no more moves can be made)
